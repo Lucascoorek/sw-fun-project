@@ -1,5 +1,5 @@
 export interface Entity {
-  uid: number;
+  uid: string;
   name: string;
   url: string;
 }
