@@ -5,6 +5,8 @@ import { Starship } from '../models/Starship';
 import { Page } from '../models/Page';
 import { Observable, take } from 'rxjs';
 
+type urls = 'starships' | 'people';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -13,17 +15,15 @@ export class ApiService {
   private baseUrl = 'https://www.swapi.tech/api/';
   private peopleIds: string[] = [];
   private starshipsIds: string[] = [];
-  private starshipsUrl = 'starships';
-  private peopleUrl = 'people';
+  private starshipsUrl: urls = 'starships';
+  private peopleUrl: urls = 'people';
 
   constructor() {
-    // this.getRandomPerson();
-    // this.getRandomStarship();
-    this.collectIds(`${this.baseUrl}${this.peopleUrl}`, this.peopleIds);
-    this.collectIds(`${this.baseUrl}${this.starshipsUrl}`, this.starshipsIds);
+    this.collectIds(`${this.baseUrl}${this.peopleUrl}`, this.peopleIds, 'people');
+    this.collectIds(`${this.baseUrl}${this.starshipsUrl}`, this.starshipsIds, 'starships');
   }
 
-  collectIds(url: string, destination: string[]) {
+  collectIds(url: string, destination: string[], type: urls) {
     this.getPage(url)
       .pipe(take(1))
       .subscribe((data) => {
@@ -34,7 +34,16 @@ export class ApiService {
         });
 
         if (data.next) {
-          this.collectIds(data.next, destination);
+          this.collectIds(data.next, destination, type);
+        } else if (data.next === null) {
+          if (type === 'people') {
+            const id = this.peopleIds[Math.floor(Math.random() * this.peopleIds.length)];
+            this.getRandomPerson(id);
+          }
+          if (type === 'starships') {
+            const id = this.starshipsIds[Math.floor(Math.random() * this.starshipsIds.length)];
+            this.getRandomStarship(id);
+          }
         }
       });
   }
