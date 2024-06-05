@@ -11,4 +11,13 @@
     align-items: center;
     justify-content: center;
   }
+  .title-container {
+    color: #fdfbff;
+    font-size: 32px;
+    display: flex;
+    justify-self: center;
+    p {
+      padding-right: 5px;
+    }
+  }
 }

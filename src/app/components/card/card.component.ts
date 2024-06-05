@@ -13,5 +13,7 @@ import { CommonModule } from '@angular/common';
 })
 export class CardComponent {
   @Input() name?: SVGModel;
-  @Input() title?: string = '';
+  @Input() title = '';
+  @Input() titleIcon?: SVGModel;
+  @Input() paragraphTitle = '';
 }
