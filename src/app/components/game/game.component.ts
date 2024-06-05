@@ -1,11 +1,14 @@
 import { Component } from '@angular/core';
-import { MaterialModule } from '../../material/material.module';
+import { CardComponent } from '../card/card.component';
+import { SVGModel } from '../svg/svg-model';
 
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [MaterialModule],
+  imports: [CardComponent],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
 })
-export class GameComponent {}
+export class GameComponent {
+  name?: SVGModel;
+}

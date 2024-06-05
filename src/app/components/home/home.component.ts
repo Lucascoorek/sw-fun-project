@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { TrooperComponent } from '../svg/trooper/trooper.component';
+import { SVGComponent } from '../svg/svg.component';
 import { MaterialModule } from '../../material/material.module';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [TrooperComponent, MaterialModule],
+  imports: [SVGComponent, MaterialModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })

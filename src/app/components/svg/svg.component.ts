@@ -1,16 +1,22 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnChanges, inject } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { SVGModel } from './svg-model';
 
 @Component({
-  selector: 'app-trooper',
+  selector: 'app-svg',
   standalone: true,
   imports: [],
-  template: `<span [innerHTML]="svgIcon"></span>`,
+  template: `
+    <div>
+      <span [innerHTML]="svgIcon"></span>
+    </div>
+  `,
+  styleUrl: './svg.component.scss',
 })
-export class TrooperComponent implements OnChanges {
+export class SVGComponent implements OnChanges {
   @Input()
-  public name?: string;
+  public name?: SVGModel;
 
   public svgIcon: SafeHtml = '';
 
