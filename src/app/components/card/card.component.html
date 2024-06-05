@@ -1,7 +1,11 @@
 <mat-card class="card">
-  <div mat-card-image class="img-container">
-    <app-svg [name]="name"></app-svg>
-    <!-- <h4>STARSHIP</h4> -->
+  <div
+    [ngStyle]="{ 'background-image': 'url(./assets/imgs/hyperspace.jpg)' }"
+    mat-card-image
+    class="img-container"
+  >
+    <app-svg *ngIf="name; elseBlock" [name]="name"></app-svg>
+    <h4 *ngIf="title" style="color: #e3ddfd">{{ title }}</h4>
   </div>
   <mat-card-content>
     <p>The name of the thing</p>
