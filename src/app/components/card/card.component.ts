@@ -19,6 +19,7 @@ export class CardComponent {
   @Input() paragraphTitle = '';
   @Input() btnText = '';
   @Input() gameType: GameType = 'people';
+  @Input() btnDisabled: boolean | null = true;
 
   @Output() handleClick = new EventEmitter<GameType>();
 

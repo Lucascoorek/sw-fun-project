@@ -16,7 +16,12 @@
   <div style="flex-grow: 1"></div>
   <mat-divider></mat-divider>
   <mat-card-actions>
-    <button mat-flat-button class="custom-mat-button" (click)="emitType(gameType)">
+    <button
+      mat-flat-button
+      class="custom-mat-button"
+      (click)="emitType(gameType)"
+      [disabled]="btnDisabled"
+    >
       {{ btnText }}
     </button>
   </mat-card-actions>

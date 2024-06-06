@@ -2,20 +2,14 @@
   <div class="game-title">Select a resource you want to play with:</div>
   <div class="game-cards">
     <app-card
-      title="spaceships"
-      titleIcon="rocket"
-      paragraphTitle="Play using Star Wars characters."
-      gameType="people"
-      btnText="Use characters"
+      *ngFor="let card of data.gameType"
+      [title]="card.title"
+      [titleIcon]="card.titleIcon"
+      [paragraphTitle]="card.paragraphTitle"
+      [gameType]="card.gameType"
+      [btnText]="card.btnText"
       (handleClick)="setGameType($event)"
-    ></app-card>
-    <app-card
-      title="characters"
-      titleIcon="person"
-      paragraphTitle="Play using Star Wars spacecrafts"
-      gameType="starships"
-      btnText="Use starships"
-      (handleClick)="setGameType($event)"
+      [btnDisabled]="card.btnDisabled | async"
     ></app-card>
   </div>
 </div>
