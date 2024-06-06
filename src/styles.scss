@@ -8,3 +8,7 @@ body {
   margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
+/* Angular Material Global Overrsides*/
+.mat-mdc-unelevated-button:not(:disabled).custom-mat-button {
+  background-color: #1a1b1f;
+}

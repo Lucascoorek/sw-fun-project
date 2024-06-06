@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CardComponent } from '../card/card.component';
 import { SVGModel } from '../svg/svg-model';
+import { GameType } from '../../models/GameType';
 
 @Component({
   selector: 'app-game',
@@ -11,4 +12,9 @@ import { SVGModel } from '../svg/svg-model';
 })
 export class GameComponent {
   name?: SVGModel;
+  gameType?: GameType;
+
+  setGameType(value: GameType) {
+    this.gameType = value;
+  }
 }

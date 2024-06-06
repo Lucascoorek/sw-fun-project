@@ -2,14 +2,20 @@
   <div class="game-title">Select a resource you want to play with:</div>
   <div class="game-cards">
     <app-card
-      title="Spaceships"
+      title="spaceships"
       titleIcon="rocket"
       paragraphTitle="Play using Star Wars characters."
+      gameType="people"
+      btnText="Use characters"
+      (handleClick)="setGameType($event)"
     ></app-card>
     <app-card
-      title="People"
+      title="characters"
       titleIcon="person"
-      paragraphTitle="Play using Star Wars space crafts"
+      paragraphTitle="Play using Star Wars spacecrafts"
+      gameType="starships"
+      btnText="Use starships"
+      (handleClick)="setGameType($event)"
     ></app-card>
   </div>
 </div>

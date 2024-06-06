@@ -4,8 +4,7 @@ import { Person } from '../models/Person';
 import { Starship } from '../models/Starship';
 import { Page } from '../models/Page';
 import { Observable, take } from 'rxjs';
-
-type urls = 'starships' | 'people';
+import { GameType } from '../models/GameType';
 
 @Injectable({
   providedIn: 'root',
@@ -15,15 +14,15 @@ export class ApiService {
   private baseUrl = 'https://www.swapi.tech/api/';
   private peopleIds: string[] = [];
   private starshipsIds: string[] = [];
-  private starshipsUrl: urls = 'starships';
-  private peopleUrl: urls = 'people';
+  private starshipsUrl: GameType = 'starships';
+  private peopleUrl: GameType = 'people';
 
   constructor() {
     this.collectIds(`${this.baseUrl}${this.peopleUrl}`, this.peopleIds, 'people');
     this.collectIds(`${this.baseUrl}${this.starshipsUrl}`, this.starshipsIds, 'starships');
   }
 
-  collectIds(url: string, destination: string[], type: urls) {
+  collectIds(url: string, destination: string[], type: GameType) {
     this.getPage(url)
       .pipe(take(1))
       .subscribe((data) => {
