@@ -52,14 +52,10 @@ export class ApiService {
   }
 
   getRandomPerson(id: string): void {
-    this.http
-      .get<Person>(`${this.baseUrl}${this.peopleUrl}/${id}`)
-      .subscribe((data) => console.log(data));
+    this.http.get<Person>(`${this.baseUrl}${this.peopleUrl}/${id}`).subscribe();
   }
 
   getRandomStarship(id: string): void {
-    this.http
-      .get<Starship>(`${this.baseUrl}${this.starshipsUrl}/${id}`)
-      .subscribe((data) => console.log(data));
+    this.http.get<Starship>(`${this.baseUrl}${this.starshipsUrl}/${id}`).subscribe();
   }
 }

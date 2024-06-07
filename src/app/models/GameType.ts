@@ -14,3 +14,5 @@ export interface GameTypeProps {
 export interface GameTypeData {
   gameType: GameTypeProps[];
 }
+
+export type DataType = 'initial' | GameType;

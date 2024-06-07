@@ -32,7 +32,6 @@ export class SVGComponent implements OnChanges {
       .get(`assets/svg/${this.name}.svg`, { responseType: 'text' })
       .subscribe((value) => {
         this.svgIcon = this.sanitizer.bypassSecurityTrustHtml(value);
-        console.log('new svg', this.svgIcon);
         this.detectionRef.markForCheck();
       });
   }

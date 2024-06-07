@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CardComponent } from '../card/card.component';
-import { SVGModel } from '../svg/svg-model';
-import { GameType } from '../../models/GameType';
+import { DataType } from '../../models/GameType';
 import { CommonModule } from '@angular/common';
 import { GameService } from '../../services/game.service';
 
@@ -11,17 +10,26 @@ import { GameService } from '../../services/game.service';
   imports: [CardComponent, CommonModule],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GameComponent {
-  name?: SVGModel;
-  gameType?: GameType;
+export class GameComponent implements OnInit {
   data;
 
-  constructor(private gameSerivice: GameService) {
-    this.data = gameSerivice.getGameTypeData();
+  constructor(
+    private gameSerivice: GameService,
+    private detectRef: ChangeDetectorRef,
+  ) {
+    this.data = gameSerivice.getGameTypeData('initial');
+  }
+  ngOnInit(): void {
+    this.gameSerivice.getGameType$().subscribe((dataType) => {
+      if (dataType !== 'initial') {
+        this.data = this.gameSerivice.getGameTypeData(dataType);
+      }
+    });
   }
 
-  setGameType(value: GameType) {
+  setGameType(value: DataType) {
     this.gameSerivice.setGameType(value);
   }
 }

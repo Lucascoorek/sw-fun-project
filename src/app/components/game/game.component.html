@@ -2,7 +2,7 @@
   <div class="game-title">Select a resource you want to play with:</div>
   <div class="game-cards">
     <app-card
-      *ngFor="let card of data.gameType"
+      *ngFor="let card of data?.gameType"
       [title]="card.title"
       [titleIcon]="card.titleIcon"
       [paragraphTitle]="card.paragraphTitle"
