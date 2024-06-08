@@ -3,6 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import { DataType, GameTypeData } from '../models/GameType';
 import { getInitialData } from '../data/initial-data';
 import { getCharactersData } from '../data/characters-data';
+import { getStarshipsData } from '../data/starships-data';
 
 @Injectable({
   providedIn: 'root',
@@ -36,22 +37,34 @@ export class GameService {
   getGameTypeData(dataType: DataType = 'initial'): GameTypeData | null {
     switch (dataType) {
       case 'initial': {
-        const initData = getInitialData() as unknown as GameTypeData;
-        initData.gameType = initData.gameType.map((data, i) => ({
-          ...data,
-          btnDisabled: i === 0 ? this.btnOneDisabled$ : this.btnTwoDisabled$,
-        }));
-        return initData;
+        const initData = getInitialData();
+        const mappedData: GameTypeData = {
+          gameType: initData.gameType.map((data, i) => ({
+            ...data,
+            btnDisabled: i === 0 ? this.btnOneDisabled$ : this.btnTwoDisabled$,
+          })),
+        };
+        return mappedData;
       }
       case 'people': {
-        const initData = getCharactersData() as unknown as GameTypeData;
-        console.log(initData);
-        initData.gameType = initData.gameType.map((data, i) => ({
-          ...data,
-          btnDisabled: i === 0 ? this.btnOneDisabled$ : this.btnTwoDisabled$,
-        }));
-        console.log(initData);
-        return initData;
+        const initData = getCharactersData();
+        const mappedData: GameTypeData = {
+          gameType: initData.gameType.map((data, i) => ({
+            ...data,
+            btnDisabled: i === 0 ? this.btnOneDisabled$ : this.btnTwoDisabled$,
+          })),
+        };
+        return mappedData;
+      }
+      case 'starships': {
+        const initData = getStarshipsData();
+        const mappedData: GameTypeData = {
+          gameType: initData.gameType.map((data, i) => ({
+            ...data,
+            btnDisabled: i === 0 ? this.btnOneDisabled$ : this.btnTwoDisabled$,
+          })),
+        };
+        return mappedData;
       }
       default: {
         return null;

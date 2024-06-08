@@ -1,4 +1,6 @@
-export const getInitialData = () => {
+import { GameTypeDataProps } from '../models/GameType';
+
+export const getInitialData: () => { gameType: GameTypeDataProps[] } = () => {
   return {
     gameType: [
       {

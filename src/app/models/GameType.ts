@@ -2,13 +2,19 @@ import { Observable } from 'rxjs';
 import { SVGModel } from '../components/svg/svg-model';
 
 export type GameType = 'starships' | 'people';
-export interface GameTypeProps {
+
+interface GameProps {
   title: string;
   titleIcon: SVGModel;
   paragraphTitle: string;
   gameType: GameType;
   btnText: string;
+}
+export interface GameTypeProps extends GameProps {
   btnDisabled: Observable<boolean>;
+}
+export interface GameTypeDataProps extends GameProps {
+  btnDisabled: boolean;
 }
 
 export interface GameTypeData {

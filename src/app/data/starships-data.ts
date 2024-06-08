@@ -1,11 +1,11 @@
 import { GameTypeDataProps } from '../models/GameType';
 
-export function getCharactersData(): { gameType: GameTypeDataProps[] } {
+export function getStarshipsData(): { gameType: GameTypeDataProps[] } {
   const gameType: GameTypeDataProps = {
-    title: 'characters',
-    titleIcon: 'person',
+    title: 'spaceships ',
+    titleIcon: 'rocket',
     paragraphTitle: 'Roll the dice by choosing Star Wars characters',
-    gameType: 'people',
+    gameType: 'starships',
     btnText: 'Roll...',
     btnDisabled: false,
   };
