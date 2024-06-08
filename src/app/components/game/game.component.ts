@@ -3,6 +3,8 @@ import { CardComponent } from '../card/card.component';
 import { DataType } from '../../models/GameType';
 import { CommonModule } from '@angular/common';
 import { GameService } from '../../services/game.service';
+import { ProgressSpinnerDialogService } from '../progress-spinner-dialog.service';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-game',
@@ -16,7 +18,11 @@ export class GameComponent implements OnInit {
   data;
   gameTopTitle = 'Select a resource you want to play with:';
 
-  constructor(private gameSerivice: GameService) {
+  constructor(
+    private gameSerivice: GameService,
+    private progressSpinerService: ProgressSpinnerDialogService,
+    private apiService: ApiService,
+  ) {
     this.data = gameSerivice.getGameTypeData('initial');
   }
   ngOnInit(): void {
@@ -24,6 +30,10 @@ export class GameComponent implements OnInit {
       if (dataType !== 'initial') {
         this.data = this.gameSerivice.getGameTypeData(dataType);
         this.gameTopTitle = this.changeTopTitle(dataType);
+        this.progressSpinerService.openDialog(
+          `Loading ${dataType}...`,
+          this.apiService.getIsIdsCollected(),
+        );
       }
     });
   }

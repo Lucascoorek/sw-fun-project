@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Person } from '../models/Person';
 import { Starship } from '../models/Starship';
 import { Page } from '../models/Page';
-import { Observable, take } from 'rxjs';
+import { BehaviorSubject, Observable, take } from 'rxjs';
 import { GameType } from '../models/GameType';
 
 @Injectable({
@@ -16,8 +16,10 @@ export class ApiService {
   private starshipsIds: string[] = [];
   private starshipsUrl: GameType = 'starships';
   private peopleUrl: GameType = 'people';
+  private isIdCollected$ = new BehaviorSubject(false);
 
   collectIds(url: string, destination: string[], type: GameType) {
+    this.isIdCollected$.next(false);
     this.getPage(url)
       .pipe(take(1))
       .subscribe((data) => {
@@ -33,10 +35,12 @@ export class ApiService {
           if (type === 'people') {
             const id = this.peopleIds[Math.floor(Math.random() * this.peopleIds.length)];
             this.getRandomPerson(id);
+            this.isIdCollected$.next(true);
           }
           if (type === 'starships') {
             const id = this.starshipsIds[Math.floor(Math.random() * this.starshipsIds.length)];
             this.getRandomStarship(id);
+            this.isIdCollected$.next(true);
           }
         }
       });
@@ -60,5 +64,9 @@ export class ApiService {
 
   getRandomStarship(id: string): void {
     this.http.get<Starship>(`${this.baseUrl}${this.starshipsUrl}/${id}`).subscribe();
+  }
+
+  getIsIdsCollected() {
+    return this.isIdCollected$.asObservable();
   }
 }
