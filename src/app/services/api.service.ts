@@ -17,11 +17,6 @@ export class ApiService {
   private starshipsUrl: GameType = 'starships';
   private peopleUrl: GameType = 'people';
 
-  constructor() {
-    this.collectIds(`${this.baseUrl}${this.peopleUrl}`, this.peopleIds, 'people');
-    this.collectIds(`${this.baseUrl}${this.starshipsUrl}`, this.starshipsIds, 'starships');
-  }
-
   collectIds(url: string, destination: string[], type: GameType) {
     this.getPage(url)
       .pipe(take(1))
@@ -45,6 +40,14 @@ export class ApiService {
           }
         }
       });
+  }
+
+  collectCharactersIds() {
+    this.collectIds(`${this.baseUrl}${this.peopleUrl}`, this.peopleIds, 'people');
+  }
+
+  collectStarshipsIds() {
+    this.collectIds(`${this.baseUrl}${this.starshipsUrl}`, this.starshipsIds, 'starships');
   }
 
   getPage(url: string): Observable<Page> {

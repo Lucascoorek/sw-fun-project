@@ -4,6 +4,7 @@ import { DataType, GameTypeData } from '../models/GameType';
 import { getInitialData } from '../data/initial-data';
 import { getCharactersData } from '../data/characters-data';
 import { getStarshipsData } from '../data/starships-data';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root',
@@ -17,11 +18,13 @@ export class GameService {
   private entityOne = new BehaviorSubject(null);
   private entityTwo = new BehaviorSubject(null);
 
-  constructor() {
+  constructor(private apiService: ApiService) {
     this.gameType$.subscribe((val) => {
       if (val === 'people' || val === 'starships') {
         this.btnOneDisabled$.next(true);
         this.btnTwoDisabled$.next(true);
+        if (val === 'people') this.apiService.collectCharactersIds();
+        if (val === 'starships') this.apiService.collectStarshipsIds();
       } else {
         this.getGameTypeData('initial');
       }

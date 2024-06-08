@@ -38,10 +38,10 @@ export class GameComponent implements OnInit {
         return 'Select a resource you want to play with:';
       }
       case 'people': {
-        return 'A game using Star Wars characters';
+        return 'Play a game using Star Wars characters';
       }
       case 'starships': {
-        return 'A game using Star Wars spacecrafts';
+        return 'Play a game using Star Wars spacecrafts';
       }
       default:
         return 'Select a resource you want to play with:';
