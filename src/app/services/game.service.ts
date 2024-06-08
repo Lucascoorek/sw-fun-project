@@ -14,6 +14,8 @@ export class GameService {
   private gameType$ = new BehaviorSubject<DataType>('initial');
   private btnOneDisabled$ = new BehaviorSubject(false);
   private btnTwoDisabled$ = new BehaviorSubject(false);
+  private entityOne = new BehaviorSubject(null);
+  private entityTwo = new BehaviorSubject(null);
 
   constructor() {
     this.gameType$.subscribe((val) => {

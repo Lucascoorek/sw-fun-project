@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { CardComponent } from '../card/card.component';
 import { DataType } from '../../models/GameType';
 import { CommonModule } from '@angular/common';
@@ -14,22 +14,37 @@ import { GameService } from '../../services/game.service';
 })
 export class GameComponent implements OnInit {
   data;
+  gameTopTitle = 'Select a resource you want to play with:';
 
-  constructor(
-    private gameSerivice: GameService,
-    private detectRef: ChangeDetectorRef,
-  ) {
+  constructor(private gameSerivice: GameService) {
     this.data = gameSerivice.getGameTypeData('initial');
   }
   ngOnInit(): void {
     this.gameSerivice.getGameType$().subscribe((dataType) => {
       if (dataType !== 'initial') {
         this.data = this.gameSerivice.getGameTypeData(dataType);
+        this.gameTopTitle = this.changeTopTitle(dataType);
       }
     });
   }
 
   setGameType(value: DataType) {
     this.gameSerivice.setGameType(value);
+  }
+
+  changeTopTitle(dataType: DataType) {
+    switch (dataType) {
+      case 'initial': {
+        return 'Select a resource you want to play with:';
+      }
+      case 'people': {
+        return 'A game using Star Wars characters';
+      }
+      case 'starships': {
+        return 'A game using Star Wars spacecrafts';
+      }
+      default:
+        return 'Select a resource you want to play with:';
+    }
   }
 }
