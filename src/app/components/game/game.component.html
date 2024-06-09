@@ -2,14 +2,15 @@
   <div class="game-title">{{ gameTopTitle }}</div>
   <div class="game-cards">
     <app-card
-      *ngFor="let card of data?.gameType"
-      [title]="card.title"
-      [titleIcon]="card.titleIcon"
-      [paragraphTitle]="card.paragraphTitle"
-      [gameType]="card.gameType"
-      [btnText]="card.btnText"
-      (handleClick)="setGameType($event)"
-      [btnDisabled]="card.btnDisabled | async"
+      *ngFor="let el of data?.gameType"
+      [title]="el.title"
+      [titleIcon]="el.titleIcon"
+      [paragraphTitle]="el.paragraphTitle"
+      [gameType]="el.gameType"
+      [btnText]="el.btnText"
+      (emitClick)="handleClick($event)"
+      [btnDisabled]="el.btnDisabled | async"
+      [user]="el.user"
     ></app-card>
   </div>
 </div>

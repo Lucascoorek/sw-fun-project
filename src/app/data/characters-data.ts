@@ -8,6 +8,7 @@ export function getCharactersData(): { gameType: GameTypeDataProps[] } {
     gameType: 'people',
     btnText: 'Roll...',
     btnDisabled: false,
+    user: 'one',
   };
-  return { gameType: [gameType, gameType] };
+  return { gameType: [gameType, { ...gameType, user: 'two' }] };
 }

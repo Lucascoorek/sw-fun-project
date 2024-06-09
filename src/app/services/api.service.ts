@@ -18,7 +18,7 @@ export class ApiService {
   private peopleUrl: GameType = 'people';
   private isIdCollected$ = new BehaviorSubject(false);
 
-  collectIds(url: string, destination: string[], type: GameType) {
+  private collectIds(url: string, destination: string[], type: GameType): void {
     this.isIdCollected$.next(false);
     this.getPage(url)
       .pipe(take(1))
@@ -28,45 +28,49 @@ export class ApiService {
             destination.push(el.uid);
           }
         });
-
         if (data.next) {
           this.collectIds(data.next, destination, type);
         } else if (data.next === null) {
-          if (type === 'people') {
-            const id = this.peopleIds[Math.floor(Math.random() * this.peopleIds.length)];
-            this.getRandomPerson(id);
-            this.isIdCollected$.next(true);
-          }
-          if (type === 'starships') {
-            const id = this.starshipsIds[Math.floor(Math.random() * this.starshipsIds.length)];
-            this.getRandomStarship(id);
+          if (type === 'people' || type === 'starships') {
             this.isIdCollected$.next(true);
           }
         }
       });
   }
 
-  collectCharactersIds() {
-    this.collectIds(`${this.baseUrl}${this.peopleUrl}`, this.peopleIds, 'people');
+  collectCharactersIds(): void {
+    if (this.peopleIds.length === 0)
+      this.collectIds(`${this.baseUrl}${this.peopleUrl}`, this.peopleIds, 'people');
   }
 
-  collectStarshipsIds() {
-    this.collectIds(`${this.baseUrl}${this.starshipsUrl}`, this.starshipsIds, 'starships');
+  collectStarshipsIds(): void {
+    if (this.starshipsIds.length === 0)
+      this.collectIds(`${this.baseUrl}${this.starshipsUrl}`, this.starshipsIds, 'starships');
   }
 
-  getPage(url: string): Observable<Page> {
+  private getPage(url: string): Observable<Page> {
     return this.http.get<Page>(url);
   }
 
-  getRandomPerson(id: string): void {
-    this.http.get<Person>(`${this.baseUrl}${this.peopleUrl}/${id}`).subscribe();
+  private getRandomPerson(id: string): Observable<Person> {
+    return this.http.get<Person>(`${this.baseUrl}${this.peopleUrl}/${id}`);
   }
 
-  getRandomStarship(id: string): void {
-    this.http.get<Starship>(`${this.baseUrl}${this.starshipsUrl}/${id}`).subscribe();
+  private getRandomStarship(id: string): Observable<Starship> {
+    return this.http.get<Starship>(`${this.baseUrl}${this.starshipsUrl}/${id}`);
   }
 
-  getIsIdsCollected() {
+  getIsIdsCollected$(): Observable<boolean> {
     return this.isIdCollected$.asObservable();
+  }
+
+  getPerson(): Observable<Person> {
+    const id = this.peopleIds[Math.floor(Math.random() * this.peopleIds.length)];
+    return this.getRandomPerson(id);
+  }
+
+  getStarship(): Observable<Starship> {
+    const id = this.starshipsIds[Math.floor(Math.random() * this.starshipsIds.length)];
+    return this.getRandomStarship(id);
   }
 }

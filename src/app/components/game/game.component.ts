@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { CardComponent } from '../card/card.component';
-import { DataType } from '../../models/GameType';
+import { DataType, User } from '../../models/GameType';
 import { CommonModule } from '@angular/common';
 import { GameService } from '../../services/game.service';
 import { ProgressSpinnerDialogService } from '../progress-spinner-dialog.service';
@@ -32,14 +32,14 @@ export class GameComponent implements OnInit {
         this.gameTopTitle = this.changeTopTitle(dataType);
         this.progressSpinerService.openDialog(
           `Loading ${dataType}...`,
-          this.apiService.getIsIdsCollected(),
+          this.apiService.getIsIdsCollected$(),
         );
       }
     });
   }
 
-  setGameType(value: DataType) {
-    this.gameSerivice.setGameType(value);
+  handleClick({ gameType, user }: { gameType: DataType; user: User | null }) {
+    this.gameSerivice.dispatchGameData({ gameType, user });
   }
 
   changeTopTitle(dataType: DataType) {

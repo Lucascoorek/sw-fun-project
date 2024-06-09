@@ -10,6 +10,7 @@ export const getInitialData: () => { gameType: GameTypeDataProps[] } = () => {
         gameType: 'people',
         btnText: 'Use characters',
         btnDisabled: false,
+        user: null,
       },
       {
         title: 'spaceships ',
@@ -18,6 +19,7 @@ export const getInitialData: () => { gameType: GameTypeDataProps[] } = () => {
         gameType: 'starships',
         btnText: 'Use starships',
         btnDisabled: false,
+        user: null,
       },
     ],
   };

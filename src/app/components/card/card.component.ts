@@ -3,7 +3,7 @@ import { MaterialModule } from '../../material/material.module';
 import { SVGComponent } from '../svg/svg.component';
 import { SVGModel } from '../svg/svg-model';
 import { CommonModule } from '@angular/common';
-import { DataType } from '../../models/GameType';
+import { DataType, User } from '../../models/GameType';
 
 @Component({
   selector: 'app-card',
@@ -20,10 +20,11 @@ export class CardComponent {
   @Input() btnText = '';
   @Input() gameType: DataType = 'initial';
   @Input() btnDisabled: boolean | null = true;
+  @Input() user: User | null = null;
 
-  @Output() handleClick = new EventEmitter<DataType>();
+  @Output() emitClick = new EventEmitter<{ gameType: DataType; user: User | null }>();
 
-  emitType(val: DataType) {
-    this.handleClick.emit(val);
+  emitType(gameType: DataType, user: User | null) {
+    this.emitClick.emit({ gameType, user });
   }
 }

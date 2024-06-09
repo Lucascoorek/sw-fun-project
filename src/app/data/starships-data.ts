@@ -8,6 +8,7 @@ export function getStarshipsData(): { gameType: GameTypeDataProps[] } {
     gameType: 'starships',
     btnText: 'Roll...',
     btnDisabled: false,
+    user: 'one',
   };
-  return { gameType: [gameType, gameType] };
+  return { gameType: [gameType, { ...gameType, user: 'two' }] };
 }
