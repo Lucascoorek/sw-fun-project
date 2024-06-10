@@ -21,6 +21,7 @@ export class CardComponent {
   @Input() gameType: DataType = 'initial';
   @Input() btnDisabled: boolean | null = true;
   @Input() user: User | null = null;
+  @Input() score: number | null | 'unknown' = null;
 
   @Output() emitClick = new EventEmitter<{ gameType: DataType; user: User | null }>();
 

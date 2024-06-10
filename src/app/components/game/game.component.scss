@@ -11,4 +11,12 @@
   &-cards {
     display: flex;
   }
+  &-actions {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    button:nth-child(2) {
+      margin-top: 8px;
+    }
+  }
 }

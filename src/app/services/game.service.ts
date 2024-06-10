@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, filter, of, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, of, switchMap } from 'rxjs';
 import { DataType, GameTypeData, User } from '../models/GameType';
 import { getInitialData } from '../data/initial-data';
 import { getCharactersData } from '../data/characters-data';
@@ -12,21 +12,32 @@ import { Starship } from '../models/Starship';
   providedIn: 'root',
 })
 export class GameService {
-  private userOneScore$ = new BehaviorSubject(0);
-  private userTwoScore$ = new BehaviorSubject(0);
+  private userOneScore$ = new BehaviorSubject<null | number | 'unknown'>(null);
+  private userTwoScore$ = new BehaviorSubject<null | number | 'unknown'>(null);
   private gameType$ = new BehaviorSubject<DataType>('initial');
   private btnOneDisabled$ = new BehaviorSubject(false);
   private btnTwoDisabled$ = new BehaviorSubject(false);
+  private titleOne$ = new BehaviorSubject('characters');
+  private titleTwo$ = new BehaviorSubject('spacecrafts');
   private entityOne = new BehaviorSubject<Person | Starship | null>(null);
   private entityTwo = new BehaviorSubject<Person | Starship | null>(null);
+  private reset$ = new BehaviorSubject(false);
 
   constructor(private apiService: ApiService) {
     this.gameType$.subscribe((val) => {
       if (val === 'people' || val === 'starships') {
         this.btnOneDisabled$.next(true);
         this.btnTwoDisabled$.next(true);
-        if (val === 'people') this.apiService.collectCharactersIds();
-        if (val === 'starships') this.apiService.collectStarshipsIds();
+        if (val === 'people') {
+          this.apiService.collectCharactersIds();
+          this.titleOne$.next('characters');
+          this.titleTwo$.next('characters');
+        }
+        if (val === 'starships') {
+          this.apiService.collectStarshipsIds();
+          this.titleOne$.next('starships');
+          this.titleTwo$.next('starships');
+        }
       } else {
         this.getGameTypeData('initial');
       }
@@ -38,10 +49,44 @@ export class GameService {
         this.btnTwoDisabled$.next(false);
       }
     });
+
+    this.entityOne.subscribe((entity) => {
+      if (entity) {
+        this.titleOne$.next(entity.result.properties.name);
+        if (entity.result.description === 'A Starship') {
+          const eT = entity as Starship;
+          const isKnown = !isNaN(parseInt(eT.result.properties.crew));
+          this.userOneScore$.next(isKnown ? parseInt(eT.result.properties.crew) : 'unknown');
+        }
+        if (entity.result.description === 'A person within the Star Wars universe') {
+          const eT = entity as Person;
+          const isKnown = !isNaN(parseInt(eT.result.properties.mass));
+          this.userOneScore$.next(isKnown ? parseInt(eT.result.properties.mass) : 'unknown');
+        }
+      }
+    });
+    this.entityTwo.subscribe((entity) => {
+      if (entity) {
+        this.titleTwo$.next(entity.result.properties.name);
+        if (entity.result.description === 'A Starship') {
+          const eT = entity as Starship;
+          this.userTwoScore$.next(parseInt(eT.result.properties.crew));
+        }
+        if (entity.result.description === 'A person within the Star Wars universe') {
+          const eT = entity as Person;
+          this.userTwoScore$.next(parseInt(eT.result.properties.mass));
+        }
+      }
+    });
+
+    combineLatest([this.userOneScore$, this.userTwoScore$]).subscribe(([scoreOne, scoreTwo]) => {
+      if (scoreOne !== null && scoreTwo !== null) {
+        this.reset$.next(true);
+      }
+    });
   }
 
   dispatchGameData({ gameType, user }: { gameType: DataType; user: User | null }) {
-    console.log(gameType, user);
     if (this.gameType$.value !== gameType) {
       this.gameType$.next(gameType);
     }
@@ -80,6 +125,8 @@ export class GameService {
           gameType: initData.gameType.map((data, i) => ({
             ...data,
             btnDisabled: i === 0 ? this.btnOneDisabled$ : this.btnTwoDisabled$,
+            title: i === 0 ? this.titleOne$ : this.titleTwo$,
+            score: i === 0 ? this.userOneScore$ : this.userTwoScore$,
           })),
         };
         return mappedData;
@@ -90,6 +137,8 @@ export class GameService {
           gameType: initData.gameType.map((data, i) => ({
             ...data,
             btnDisabled: i === 0 ? this.btnOneDisabled$ : this.btnTwoDisabled$,
+            title: i === 0 ? this.titleOne$ : this.titleTwo$,
+            score: i === 0 ? this.userOneScore$ : this.userTwoScore$,
           })),
         };
         return mappedData;
@@ -100,6 +149,8 @@ export class GameService {
           gameType: initData.gameType.map((data, i) => ({
             ...data,
             btnDisabled: i === 0 ? this.btnOneDisabled$ : this.btnTwoDisabled$,
+            title: i === 0 ? this.titleOne$ : this.titleTwo$,
+            score: i === 0 ? this.userOneScore$ : this.userTwoScore$,
           })),
         };
         return mappedData;
@@ -108,5 +159,25 @@ export class GameService {
         return null;
       }
     }
+  }
+
+  getResetStatus$() {
+    return this.reset$.asObservable();
+  }
+
+  resetGame(changeGame = false) {
+    const gameType = this.gameType$.value;
+    const newGameType = changeGame ? (gameType === 'people' ? 'starships' : 'people') : gameType;
+    this.gameType$.next(newGameType);
+    this.btnTwoDisabled$.next(false);
+    this.btnOneDisabled$.next(false);
+    this.userOneScore$.next(null);
+    this.userTwoScore$.next(null);
+    this.reset$.next(false);
+  }
+
+  switchGame(dataType: DataType) {
+    console.log('switchGame with: => ', dataType);
+    this.resetGame(true);
   }
 }

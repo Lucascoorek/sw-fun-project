@@ -5,7 +5,6 @@ export type GameType = 'starships' | 'people';
 export type User = 'one' | 'two';
 
 interface GameProps {
-  title: string;
   titleIcon: SVGModel;
   paragraphTitle: string;
   gameType: GameType;
@@ -14,9 +13,12 @@ interface GameProps {
 }
 export interface GameTypeProps extends GameProps {
   btnDisabled: Observable<boolean>;
+  title: Observable<string>;
+  score: Observable<null | number | 'unknown'>;
 }
 export interface GameTypeDataProps extends GameProps {
   btnDisabled: boolean;
+  title: string;
 }
 
 export interface GameTypeData {

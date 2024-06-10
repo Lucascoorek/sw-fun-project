@@ -6,12 +6,15 @@
   >
     <app-svg *ngIf="name; elseBlock" [name]="name"></app-svg>
     <div class="title-container" *ngIf="title">
-      <p>{{ title }}</p>
-      <app-svg *ngIf="titleIcon" [name]="titleIcon"></app-svg>
+      <p>
+        {{ title }}
+        <!-- <app-svg *ngIf="titleIcon" [name]="titleIcon"></app-svg>   -->
+      </p>
     </div>
   </div>
   <mat-card-content>
     <p style="padding-top: 20px; font-size: 20px">{{ paragraphTitle }}</p>
+    <p *ngIf="score !== null">{{ score }}</p>
   </mat-card-content>
   <div style="flex-grow: 1"></div>
   <mat-divider></mat-divider>

@@ -2,7 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnChanges, inject, ChangeDetectorRef } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { SVGModel } from './svg-model';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'app-svg',
   standalone: true,
@@ -30,6 +32,7 @@ export class SVGComponent implements OnChanges {
     }
     this.httpClient
       .get(`assets/svg/${this.name}.svg`, { responseType: 'text' })
+      .pipe(untilDestroyed(this))
       .subscribe((value) => {
         this.svgIcon = this.sanitizer.bypassSecurityTrustHtml(value);
         this.detectionRef.markForCheck();
