@@ -26,3 +26,5 @@ export interface GameTypeData {
 }
 
 export type DataType = 'initial' | GameType;
+
+export type GameTitle = 'characters' | 'spacecrafts' | string;

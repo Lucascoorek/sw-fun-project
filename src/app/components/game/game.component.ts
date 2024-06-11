@@ -51,7 +51,7 @@ export class GameComponent implements OnInit {
           this.gameTopTitle = this.changeTopTitle(dataType);
           this.progressSpinerService.openDialog(
             `Loading ${dataType}...`,
-            this.apiService.getIsIdsCollected$(),
+            this.apiService.getIsIdsCollected$(dataType),
           );
         }
       });
@@ -91,7 +91,9 @@ export class GameComponent implements OnInit {
         return 'initial';
       }
     };
-    this.data = this.gameSerivice.getGameTypeData(arg());
-    this.gameSerivice.switchGame(arg());
+    const newGameType = arg();
+    this.data = this.gameSerivice.getGameTypeData(newGameType);
+    this.gameSerivice.dispatchGameData({ gameType: newGameType, user: null });
+    this.gameSerivice.switchGame(newGameType);
   }
 }

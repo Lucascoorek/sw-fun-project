@@ -14,15 +14,17 @@
       [score]="el.score | async"
     ></app-card>
   </div>
-  <div class="game-actions" *ngIf="resetStatus$ | async">
-    <button mat-flat-button class="custom-mat-button" (click)="resetGame()">Play again</button>
-    <button
-      *ngIf="switchTo$ | async as newGameType"
-      mat-flat-button
-      class="custom-mat-button"
-      (click)="switchGame(newGameType)"
-    >
-      Switch to {{ newGameType }}
-    </button>
+  <div style="height: 90px">
+    <div class="game-actions" *ngIf="resetStatus$ | async">
+      <button mat-flat-button class="custom-mat-button" (click)="resetGame()">Play again</button>
+      <button
+        *ngIf="switchTo$ | async as newGameType"
+        mat-flat-button
+        class="custom-mat-button"
+        (click)="switchGame(newGameType)"
+      >
+        Switch to {{ newGameType }}
+      </button>
+    </div>
   </div>
 </div>

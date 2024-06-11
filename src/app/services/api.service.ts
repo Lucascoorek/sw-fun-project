@@ -4,7 +4,7 @@ import { Person } from '../models/Person';
 import { Starship } from '../models/Starship';
 import { Page } from '../models/Page';
 import { BehaviorSubject, Observable, take } from 'rxjs';
-import { GameType } from '../models/GameType';
+import { DataType, GameType } from '../models/GameType';
 
 @Injectable({
   providedIn: 'root',
@@ -17,9 +17,16 @@ export class ApiService {
   private starshipsUrl: GameType = 'starships';
   private peopleUrl: GameType = 'people';
   private isIdCollected$ = new BehaviorSubject(false);
+  private isStarshipsIdsCollected$ = new BehaviorSubject(false);
+  private isPeopleIdsCollected$ = new BehaviorSubject(false);
 
   private collectIds(url: string, destination: string[], type: GameType): void {
-    this.isIdCollected$.next(false);
+    if (type === 'people') {
+      this.isPeopleIdsCollected$.next(false);
+    }
+    if (type === 'starships') {
+      this.isStarshipsIdsCollected$.next(false);
+    }
     this.getPage(url)
       .pipe(take(1))
       .subscribe((data) => {
@@ -31,8 +38,11 @@ export class ApiService {
         if (data.next) {
           this.collectIds(data.next, destination, type);
         } else if (data.next === null) {
-          if (type === 'people' || type === 'starships') {
-            this.isIdCollected$.next(true);
+          if (type === 'people') {
+            this.isPeopleIdsCollected$.next(true);
+          }
+          if (type === 'starships') {
+            this.isStarshipsIdsCollected$.next(true);
           }
         }
       });
@@ -60,8 +70,16 @@ export class ApiService {
     return this.http.get<Starship>(`${this.baseUrl}${this.starshipsUrl}/${id}`);
   }
 
-  getIsIdsCollected$(): Observable<boolean> {
-    return this.isIdCollected$.asObservable();
+  getIsIdsCollected$(type: DataType): Observable<boolean> {
+    let ref;
+    if (type === 'people') {
+      ref = this.isPeopleIdsCollected$;
+    } else if (type === 'starships') {
+      ref = this.isStarshipsIdsCollected$;
+    } else {
+      ref = new BehaviorSubject(false);
+    }
+    return ref;
   }
 
   getPerson(): Observable<Person> {

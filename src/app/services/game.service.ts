@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, filter, of, switchMap } from 'rxjs';
-import { DataType, GameTypeData, User } from '../models/GameType';
+import { BehaviorSubject, combineLatest, filter, of, switchMap, take } from 'rxjs';
+import { DataType, GameTitle, GameTypeData, User } from '../models/GameType';
 import { getInitialData } from '../data/initial-data';
 import { getCharactersData } from '../data/characters-data';
 import { getStarshipsData } from '../data/starships-data';
@@ -17,10 +17,10 @@ export class GameService {
   private gameType$ = new BehaviorSubject<DataType>('initial');
   private btnOneDisabled$ = new BehaviorSubject(false);
   private btnTwoDisabled$ = new BehaviorSubject(false);
-  private titleOne$ = new BehaviorSubject('characters');
-  private titleTwo$ = new BehaviorSubject('spacecrafts');
-  private entityOne = new BehaviorSubject<Person | Starship | null>(null);
-  private entityTwo = new BehaviorSubject<Person | Starship | null>(null);
+  private titleOne$ = new BehaviorSubject<GameTitle>('characters');
+  private titleTwo$ = new BehaviorSubject<GameTitle>('spacecrafts');
+  private entityOne$ = new BehaviorSubject<Person | Starship | null>(null);
+  private entityTwo$ = new BehaviorSubject<Person | Starship | null>(null);
   private reset$ = new BehaviorSubject(false);
 
   constructor(private apiService: ApiService) {
@@ -35,22 +35,28 @@ export class GameService {
         }
         if (val === 'starships') {
           this.apiService.collectStarshipsIds();
-          this.titleOne$.next('starships');
-          this.titleTwo$.next('starships');
+          this.titleOne$.next('spacecrafts');
+          this.titleTwo$.next('spacecrafts');
         }
       } else {
         this.getGameTypeData('initial');
       }
     });
 
-    this.apiService.getIsIdsCollected$().subscribe((isIdCollected) => {
-      if (isIdCollected) {
-        this.btnOneDisabled$.next(false);
-        this.btnTwoDisabled$.next(false);
-      }
-    });
+    this.gameType$
+      .pipe(
+        switchMap((gT) => {
+          return this.apiService.getIsIdsCollected$(gT);
+        }),
+      )
+      .subscribe((isIdCollected) => {
+        if (isIdCollected) {
+          this.btnOneDisabled$.next(false);
+          this.btnTwoDisabled$.next(false);
+        }
+      });
 
-    this.entityOne.subscribe((entity) => {
+    this.entityOne$.subscribe((entity) => {
       if (entity) {
         this.titleOne$.next(entity.result.properties.name);
         if (entity.result.description === 'A Starship') {
@@ -65,16 +71,18 @@ export class GameService {
         }
       }
     });
-    this.entityTwo.subscribe((entity) => {
+    this.entityTwo$.subscribe((entity) => {
       if (entity) {
         this.titleTwo$.next(entity.result.properties.name);
         if (entity.result.description === 'A Starship') {
           const eT = entity as Starship;
-          this.userTwoScore$.next(parseInt(eT.result.properties.crew));
+          const isKnown = !isNaN(parseInt(eT.result.properties.crew));
+          this.userTwoScore$.next(isKnown ? parseInt(eT.result.properties.crew) : 'unknown');
         }
         if (entity.result.description === 'A person within the Star Wars universe') {
           const eT = entity as Person;
-          this.userTwoScore$.next(parseInt(eT.result.properties.mass));
+          const isKnown = !isNaN(parseInt(eT.result.properties.mass));
+          this.userTwoScore$.next(isKnown ? parseInt(eT.result.properties.mass) : 'unknown');
         }
       }
     });
@@ -93,22 +101,22 @@ export class GameService {
     if (user === 'one') this.btnOneDisabled$.next(true);
     if (user === 'two') this.btnTwoDisabled$.next(true);
 
-    this.apiService
-      .getIsIdsCollected$()
+    combineLatest([this.apiService.getIsIdsCollected$(this.gameType$.value), this.gameType$])
       .pipe(
-        filter((val) => val && user !== null),
-        switchMap(() => {
-          if (gameType === 'people') {
+        filter(([val]) => val && user !== null),
+        switchMap(([, gT]) => {
+          if (gT === 'people') {
             return this.apiService.getPerson();
-          } else if (gameType === 'starships') {
+          } else if (gT === 'starships') {
             return this.apiService.getStarship();
           } else {
             return of(null);
           }
         }),
+        take(1),
       )
       .subscribe((entity) => {
-        const ref = user === 'one' ? this.entityOne : this.entityTwo;
+        const ref = user === 'one' ? this.entityOne$ : this.entityTwo$;
         ref.next(entity);
       });
   }
@@ -165,10 +173,7 @@ export class GameService {
     return this.reset$.asObservable();
   }
 
-  resetGame(changeGame = false) {
-    const gameType = this.gameType$.value;
-    const newGameType = changeGame ? (gameType === 'people' ? 'starships' : 'people') : gameType;
-    this.gameType$.next(newGameType);
+  resetGame() {
     this.btnTwoDisabled$.next(false);
     this.btnOneDisabled$.next(false);
     this.userOneScore$.next(null);
@@ -177,7 +182,15 @@ export class GameService {
   }
 
   switchGame(dataType: DataType) {
-    console.log('switchGame with: => ', dataType);
-    this.resetGame(true);
+    const newTitle: GameTitle = dataType === 'people' ? 'characters' : 'spacecrafts';
+    if (newTitle) {
+      this.titleOne$.next(newTitle);
+      this.titleTwo$.next(newTitle);
+      this.entityOne$.next(null);
+      this.entityTwo$.next(null);
+      this.userOneScore$.next(null);
+      this.userTwoScore$.next(null);
+    }
+    this.resetGame();
   }
 }
