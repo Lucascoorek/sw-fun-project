@@ -7,7 +7,6 @@ import { ProgressSpinnerDialogService } from '../progress-spinner-dialog.service
 import { ApiService } from '../../services/api.service';
 import { MaterialModule } from '../../material/material.module';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Observable, map } from 'rxjs';
 
 type GameName = 'Starships' | 'Characters' | null;
 
@@ -24,14 +23,9 @@ export class GameComponent implements OnInit {
   data;
   resetStatus$;
   gameTopTitle = 'Select a resource you want to play with:';
-
-  switchTo$: Observable<GameName> = this.gameSerivice.getGameType$().pipe(
-    map((gameType) => {
-      if (gameType === 'people') return 'Starships';
-      else if (gameType === 'starships') return 'Characters';
-      else return null;
-    }),
-  );
+  winner$;
+  currentTitle: GameName | null = null;
+  switchTo: GameName | null = null;
 
   constructor(
     private gameSerivice: GameService,
@@ -40,6 +34,7 @@ export class GameComponent implements OnInit {
   ) {
     this.data = gameSerivice.getGameTypeData('initial');
     this.resetStatus$ = gameSerivice.getResetStatus$();
+    this.winner$ = gameSerivice.getWinner$();
   }
   ngOnInit(): void {
     this.gameSerivice
@@ -54,11 +49,22 @@ export class GameComponent implements OnInit {
             this.apiService.getIsIdsCollected$(dataType),
           );
         }
+        if (dataType === 'people') {
+          this.currentTitle = 'Characters';
+          this.switchTo = 'Starships';
+        } else if (dataType === 'starships') {
+          this.currentTitle = 'Starships';
+          this.switchTo = 'Characters';
+        } else this.switchTo = null;
       });
   }
 
   handleClick({ gameType, user }: { gameType: DataType; user: User | null }) {
     this.gameSerivice.dispatchGameData({ gameType, user });
+    this.progressSpinerService.openDialog(
+      `Loading ${gameType}...`,
+      this.gameSerivice.getIsLoadingData$(),
+    );
   }
 
   changeTopTitle(dataType: DataType) {
@@ -78,7 +84,7 @@ export class GameComponent implements OnInit {
   }
 
   resetGame() {
-    this.gameSerivice.resetGame();
+    this.gameSerivice.resetGame(true, this.currentTitle ? this.currentTitle : undefined);
   }
 
   switchGame(gameType: GameName) {

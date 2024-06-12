@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, filter, of, switchMap, take } from 'rxjs';
-import { DataType, GameTitle, GameTypeData, User } from '../models/GameType';
+import { BehaviorSubject, Observable, combineLatest, filter, map, of, switchMap, take } from 'rxjs';
+import { DataType, GameTitle, GameTypeData, User, Winner } from '../models/GameType';
 import { getInitialData } from '../data/initial-data';
 import { getCharactersData } from '../data/characters-data';
 import { getStarshipsData } from '../data/starships-data';
@@ -22,6 +22,7 @@ export class GameService {
   private entityOne$ = new BehaviorSubject<Person | Starship | null>(null);
   private entityTwo$ = new BehaviorSubject<Person | Starship | null>(null);
   private reset$ = new BehaviorSubject(false);
+  private isLoadingData$ = new BehaviorSubject(false);
 
   constructor(private apiService: ApiService) {
     this.gameType$.subscribe((val) => {
@@ -95,6 +96,7 @@ export class GameService {
   }
 
   dispatchGameData({ gameType, user }: { gameType: DataType; user: User | null }) {
+    this.isLoadingData$.next(true);
     if (this.gameType$.value !== gameType) {
       this.gameType$.next(gameType);
     }
@@ -118,6 +120,7 @@ export class GameService {
       .subscribe((entity) => {
         const ref = user === 'one' ? this.entityOne$ : this.entityTwo$;
         ref.next(entity);
+        this.isLoadingData$.next(false);
       });
   }
 
@@ -173,11 +176,19 @@ export class GameService {
     return this.reset$.asObservable();
   }
 
-  resetGame() {
+  getIsLoadingData$() {
+    return this.isLoadingData$.asObservable();
+  }
+
+  resetGame(changeTitle = false, newTitle?: GameTitle) {
     this.btnTwoDisabled$.next(false);
     this.btnOneDisabled$.next(false);
     this.userOneScore$.next(null);
     this.userTwoScore$.next(null);
+    if (changeTitle && newTitle) {
+      this.titleOne$.next(newTitle);
+      this.titleTwo$.next(newTitle);
+    }
     this.reset$.next(false);
   }
 
@@ -192,5 +203,33 @@ export class GameService {
       this.userTwoScore$.next(null);
     }
     this.resetGame();
+  }
+
+  getWinner$(): Observable<Winner> {
+    return combineLatest([this.userOneScore$, this.userTwoScore$]).pipe(
+      map(([scoreOne, scoreTwo]) => {
+        if (typeof scoreOne === 'number' && typeof scoreTwo === 'number') {
+          return {
+            one: scoreOne > scoreTwo,
+            two: scoreTwo > scoreOne,
+          };
+        } else if (typeof scoreOne === 'number' && typeof scoreTwo === 'string') {
+          return {
+            one: true,
+            two: false,
+          };
+        } else if (typeof scoreOne === 'string' && typeof scoreTwo === 'number') {
+          return {
+            one: false,
+            two: true,
+          };
+        } else {
+          return {
+            one: null,
+            two: null,
+          };
+        }
+      }),
+    );
   }
 }
