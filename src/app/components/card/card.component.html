@@ -1,12 +1,19 @@
 <mat-card class="card">
   <div
-    [ngStyle]="{ 'background-image': 'url(./assets/imgs/hyperspace.jpg)' }"
+    [ngStyle]="{
+      'background-image': 'url(./assets/imgs/hyperspace.jpg)',
+    }"
     mat-card-image
     class="img-container"
   >
     <app-svg *ngIf="name; elseBlock" [name]="name"></app-svg>
     <div class="title-container" *ngIf="title">
-      <p>
+      <p
+        [class.winner]="(user === 'one' && winner?.one) || (user === 'two' && winner?.two)"
+        [class.looser]="
+          (user === 'one' && winner?.one === false) || (user === 'two' && winner?.two === false)
+        "
+      >
         {{ title }}
         <!-- <app-svg *ngIf="titleIcon" [name]="titleIcon"></app-svg>   -->
       </p>
@@ -18,10 +25,10 @@
   </mat-card-content>
   <div style="flex-grow: 1">
     <div *ngIf="user === 'one' && winner?.one">
-      <mat-card-content> Winner!!! </mat-card-content>
+      <mat-card-content style="color: #d5a419"> Winner!!! 🎉🎉</mat-card-content>
     </div>
     <div *ngIf="user === 'two' && winner?.two">
-      <mat-card-content> Winner!!! </mat-card-content>
+      <mat-card-content style="color: #d5a419"> Winner!!! 🎉🎉</mat-card-content>
     </div>
   </div>
   <mat-divider></mat-divider>

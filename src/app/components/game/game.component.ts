@@ -8,7 +8,7 @@ import { ApiService } from '../../services/api.service';
 import { MaterialModule } from '../../material/material.module';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
-type GameName = 'Starships' | 'Characters' | null;
+type GameName = 'starships' | 'characters' | null;
 
 @UntilDestroy()
 @Component({
@@ -50,11 +50,11 @@ export class GameComponent implements OnInit {
           );
         }
         if (dataType === 'people') {
-          this.currentTitle = 'Characters';
-          this.switchTo = 'Starships';
+          this.currentTitle = 'characters';
+          this.switchTo = 'starships';
         } else if (dataType === 'starships') {
-          this.currentTitle = 'Starships';
-          this.switchTo = 'Characters';
+          this.currentTitle = 'starships';
+          this.switchTo = 'characters';
         } else this.switchTo = null;
       });
   }
@@ -89,9 +89,9 @@ export class GameComponent implements OnInit {
 
   switchGame(gameType: GameName) {
     const arg: () => DataType = () => {
-      if (gameType === 'Characters') {
+      if (gameType === 'characters') {
         return 'people';
-      } else if (gameType === 'Starships') {
+      } else if (gameType === 'starships') {
         return 'starships';
       } else {
         return 'initial';

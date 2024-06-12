@@ -27,5 +27,11 @@
       align-items: center;
       justify-content: center;
     }
+    p.winner {
+      color: #d5a419;
+    }
+    p.looser {
+      color: #ababab;
+    }
   }
 }
